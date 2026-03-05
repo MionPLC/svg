@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="fuxaWidget"
+ xmlns="http://www.w3.org/2000/svg"
+ viewBox="0 0 100 100"
+ width="100%" height="100%"
+ preserveAspectRatio="none"
+ style="background:transparent;">
+
+<!-- Lamp -->
+<rect id="lamp"
+ x="10"
+ y="10"
+ width="80"
+ height="80"
+ fill="#444444"/>
+
+<script><![CDATA[
+
+//!export-start
+let _pn_state = 0;
+let _pn_maxState = 5;
+
+let _pb_blink = false;
+
+let _pn_width = 80;
+let _pn_height = 80;
+
+// warna state
+let _pc_state0 = "#444444";
+let _pc_state1 = "#00ff00";
+let _pc_state2 = "#ffff00";
+let _pc_state3 = "#ff0000";
+let _pc_state4 = "#00bfff";
+let _pc_state5 = "#ff00ff";
+let _pc_state6 = "#00ffaa";
+let _pc_state7 = "#ffaa00";
+let _pc_state8 = "#ffffff";
+let _pc_state9 = "#8888ff";
+let _pc_state10 = "#00ffff";
+let _pc_state11 = "#ff8800";
+let _pc_state12 = "#ff4444";
+let _pc_state13 = "#44ff44";
+let _pc_state14 = "#4444ff";
+let _pc_state15 = "#ffaaee";
+let _pc_state16 = "#aaffaa";
+let _pc_state17 = "#ffaaaa";
+let _pc_state18 = "#aaaaff";
+let _pc_state19 = "#ffffaa";
+let _pc_state20 = "#00ffcc";
+//!export-end
+
+const lamp = document.getElementById("lamp");
+
+let blinkState = true;
+let blinkTimer = null;
+
+function clampState(v){
+
+ if(v < 0) v = 0;
+ if(v > _pn_maxState) v = _pn_maxState;
+
+ return v;
+
+}
+
+function getColors(){
+
+ return [
+  _pc_state0,_pc_state1,_pc_state2,_pc_state3,_pc_state4,
+  _pc_state5,_pc_state6,_pc_state7,_pc_state8,_pc_state9,
+  _pc_state10,_pc_state11,_pc_state12,_pc_state13,_pc_state14,
+  _pc_state15,_pc_state16,_pc_state17,_pc_state18,_pc_state19,
+  _pc_state20
+ ];
+
+}
+
+function updateLamp(){
+
+ let colors = getColors();
+
+ let state = clampState(Math.floor(_pn_state));
+
+ let color = colors[state] || "#444444";
+
+ lamp.setAttribute("fill", color);
+
+ lamp.setAttribute("width", _pn_width);
+ lamp.setAttribute("height", _pn_height);
+
+}
+
+function blinkLoop(){
+
+ blinkState = !blinkState;
+
+ if(blinkState)
+  updateLamp();
+ else
+  lamp.setAttribute("fill","transparent");
+
+}
+
+function controlBlink(){
+
+ if(_pb_blink){
+
+  if(!blinkTimer)
+   blinkTimer = setInterval(blinkLoop,500);
+
+ }else{
+
+  clearInterval(blinkTimer);
+  blinkTimer = null;
+
+  updateLamp();
+
+ }
+
+}
+
+function putValue(id,value){
+
+ if(id === "_pn_state")
+  _pn_state = Number(value);
+
+ if(id === "_pn_maxState")
+  _pn_maxState = Number(value);
+
+ if(id === "_pb_blink")
+  _pb_blink = (value === true || value === 1 || value === '1');
+
+ if(id === "_pn_width")
+  _pn_width = Number(value);
+
+ if(id === "_pn_height")
+  _pn_height = Number(value);
+
+ if(id.startsWith("_pc_state"))
+  window[id] = value;
+
+ updateLamp();
+ controlBlink();
+
+}
+
+updateLamp();
+
+]]></script>
+
+</svg>
