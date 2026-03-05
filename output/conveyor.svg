@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="fuxaWidget"
+     xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 200 40"
+     width="100%" height="100%"
+     preserveAspectRatio="none"
+     style="background:transparent;">
+
+  <!-- Belt Base -->
+  <rect id="beltBase"
+        x="0" y="0"
+        width="200"
+        height="40"
+        fill="#2c2c2c"/>
+
+  <!-- Moving Stripes -->
+  <g id="beltStripes">
+
+    <rect x="-40" y="0" width="20" height="40" fill="#3a3a3a"/>
+    <rect x="0" y="0" width="20" height="40" fill="#3a3a3a"/>
+    <rect x="40" y="0" width="20" height="40" fill="#3a3a3a"/>
+    <rect x="80" y="0" width="20" height="40" fill="#3a3a3a"/>
+    <rect x="120" y="0" width="20" height="40" fill="#3a3a3a"/>
+    <rect x="160" y="0" width="20" height="40" fill="#3a3a3a"/>
+    <rect x="200" y="0" width="20" height="40" fill="#3a3a3a"/>
+
+  </g>
+
+<script><![CDATA[
+
+//!export-start
+let _pb_run = false;        // TRUE = RUN
+let _pb_reverse = true;   // TRUE = RIGHT, FALSE = LEFT
+let _pn_speed = 2;
+
+let _pc_beltColor = '#2c2c2c';
+let _pc_stripeColor = '#3a3a3a';
+//!export-end
+
+const stripes = document.getElementById('beltStripes');
+const beltBase = document.getElementById('beltBase');
+
+let animationId = null;
+let offset = 0;
+
+function putValue(id, value) {
+
+  if (id === '_pb_run')
+    _pb_run = (value === true || value === 1 || value === '1');
+
+  if (id === '_pb_reverse')
+    _pb_reverse = (value === true || value === 1 || value === '1');
+
+  if (id === '_pn_speed')
+    _pn_speed = Number(value);
+
+  if (id === '_pc_beltColor')
+    _pc_beltColor = value;
+
+  if (id === '_pc_stripeColor')
+    _pc_stripeColor = value;
+
+  updateColors();
+  controlAnimation();
+}
+
+function updateColors() {
+
+  beltBase.setAttribute("fill", _pc_beltColor);
+
+  const rects = stripes.querySelectorAll("rect");
+  rects.forEach(r => r.setAttribute("fill", _pc_stripeColor));
+}
+
+function animateBelt() {
+
+  if (_pb_reverse) {
+    // RIGHT
+    offset += _pn_speed;
+    if (offset >= 40) offset = 0;
+  } else {
+    // LEFT
+    offset -= _pn_speed;
+    if (offset <= -40) offset = 0;
+  }
+
+  stripes.setAttribute(
+    "transform",
+    "translate(" + offset + ",0)"
+  );
+
+  animationId = requestAnimationFrame(animateBelt);
+}
+
+function controlAnimation() {
+
+  if (_pb_run) {
+    if (!animationId)
+      animateBelt();
+  } else {
+    cancelAnimationFrame(animationId);
+    animationId = null;
+  }
+}
+
+updateColors();
+controlAnimation();
+
+]]></script>
+
+</svg>
