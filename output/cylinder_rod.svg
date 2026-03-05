@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="fuxaWidget"
+ xmlns="http://www.w3.org/2000/svg"
+ viewBox="0 0 260 100"
+ width="100%" height="100%"
+ preserveAspectRatio="none"
+ style="background:transparent;">
+
+<!-- Reed Switch 1 -->
+<rect id="reed1"
+ x="40"
+ y="25"
+ width="6"
+ height="20"
+ fill="#666"/>
+
+<!-- Reed Switch 2 -->
+<rect id="reed2"
+ x="200"
+ y="25"
+ width="6"
+ height="20"
+ fill="#666"/>
+
+<!-- Rod -->
+<rect id="rod"
+ x="40"
+ y="45"
+ width="5"
+ height="10"
+ fill="#00aaff"/>
+
+<script><![CDATA[
+
+//!export-start
+let _pb_extend = false;
+
+let _pn_maxLength = 160;
+let _pn_speed = 2;
+
+let _pn_reed1Pos = 0;
+let _pn_reed2Pos = 120;
+
+let _pc_rodColor = "#00aaff";
+
+let _pn_rodThickness = 10;
+
+let _pb_reed1 = false;
+let _pb_reed2 = false;
+//!export-end
+
+const rod = document.getElementById("rod");
+const reed1 = document.getElementById("reed1");
+const reed2 = document.getElementById("reed2");
+
+let position = 0;
+let animationId = null;
+
+const rodStart = 40;
+const minRodLength = 5;
+
+function clamp(v,min,max){
+ if(v<min) return min;
+ if(v>max) return max;
+ return v;
+}
+
+function updateReeds(){
+
+ let reed1X = rodStart + _pn_reed1Pos;
+ let reed2X = rodStart + _pn_reed2Pos;
+
+ reed1.setAttribute("x", reed1X);
+ reed2.setAttribute("x", reed2X);
+
+ let pos = Math.round(position);
+
+ _pb_reed1 = (pos === Math.round(_pn_reed1Pos));
+ _pb_reed2 = (pos === Math.round(_pn_reed2Pos));
+
+ reed1.setAttribute("fill", _pb_reed1 ? "#00ff00" : "#666");
+ reed2.setAttribute("fill", _pb_reed2 ? "#00ff00" : "#666");
+
+}
+
+function updateRod(){
+
+ let rodLength = minRodLength + position;
+
+ rod.setAttribute("width", rodLength);
+ rod.setAttribute("height", _pn_rodThickness);
+ rod.setAttribute("fill", _pc_rodColor);
+
+ let centerY = 50 - (_pn_rodThickness / 2);
+ rod.setAttribute("y", centerY);
+
+ updateReeds();
+
+}
+
+function animateRod(){
+
+ let target = _pb_extend ? _pn_maxLength : 0;
+
+ if(position < target)
+   position += _pn_speed;
+
+ if(position > target)
+   position -= _pn_speed;
+
+ position = clamp(position,0,_pn_maxLength);
+
+ updateRod();
+
+ animationId = requestAnimationFrame(animateRod);
+
+}
+
+function controlAnimation(){
+
+ if(!animationId)
+   animateRod();
+
+}
+
+function putValue(id,value){
+
+ if(id === "_pb_extend")
+   _pb_extend = (value === true || value === 1 || value === '1');
+
+ if(id === "_pn_maxLength")
+   _pn_maxLength = Number(value);
+
+ if(id === "_pn_speed")
+   _pn_speed = Number(value);
+
+ if(id === "_pn_reed1Pos")
+   _pn_reed1Pos = Number(value);
+
+ if(id === "_pn_reed2Pos")
+   _pn_reed2Pos = Number(value);
+
+ if(id === "_pc_rodColor")
+   _pc_rodColor = value;
+
+ if(id === "_pn_rodThickness")
+   _pn_rodThickness = Number(value);
+
+ controlAnimation();
+ updateRod();
+
+}
+
+updateRod();
+controlAnimation();
+
+]]></script>
+
+</svg>
